@@ -1,8 +1,17 @@
 # 🚀 DevOps Project 1: EC2 + Nginx Deployment
 
+## 🌍 Live Demo
+
+Application is accessible at:
+http://52.6.51.124
+
+---
+
 ## 📌 Overview
 
-This project demonstrates the setup of a cloud-based web server using AWS EC2 and Nginx, along with version control using Git and GitHub. It also includes a basic deployment workflow.
+This project demonstrates provisioning a cloud-based Linux server on AWS, configuring a web server (Nginx), and implementing a deployment workflow using Git and shell scripting.
+
+It simulates a real-world scenario of hosting and updating a web application on a remote server.
 
 ---
 
@@ -11,70 +20,76 @@ This project demonstrates the setup of a cloud-based web server using AWS EC2 an
 ### 1. AWS EC2 Setup
 
 * Launched an Ubuntu EC2 instance (t3.micro)
-* Configured security groups (SSH - 22, HTTP - 80)
-* Connected via SSH using:
+* Configured security groups:
 
-  * PowerShell
-  * WSL
+  * SSH (Port 22)
+  * HTTP (Port 80)
+* Connected via SSH using PowerShell and WSL
+
+---
+
+### 🌐 Elastic IP Configuration
+
+* Allocated and attached an Elastic IP
+* Ensures a **static public IP address** even after instance restart
+* Used for consistent browser access and SSH connectivity
+
+**Elastic IP:** 52.6.51.124
 
 ---
 
 ### 2. Linux Exploration
 
 * Navigated filesystem (`pwd`, `ls`, `cd`)
-* Checked system info (`top`, `df -h`, `free -h`)
-* Understood basic Linux structure
+* Checked system resources (`top`, `df -h`, `free -h`)
+* Understood Linux directory structure
 
 ---
 
 ### 3. Nginx Setup
 
-* Installed Nginx
-* Started and enabled service
-* Verified running service using:
+* Installed and configured Nginx as a web server
+* Started and enabled the service
+* Verified using:
 
   * `systemctl`
   * `ss -tulnp`
-* Accessed default webpage via public IP
+* Accessed application via browser
 
 ---
 
 ### 4. Custom Web Page Deployment
 
-* Edited HTML file
+* Created and modified HTML content
 * Replaced default Nginx page
-* Reloaded Nginx service
-* Verified live changes in browser
+* Reloaded Nginx to apply changes
+* Verified updates live
 
 ---
 
 ### 5. Project Structure
 
-Created a structured development workflow:
-
 /home/ubuntu/Devops-projects/
 └── Project1-EC2-Nginx/
-└── index.html
+  └── index.html
 
-* Kept development files separate from production (`/var/www/html`)
+* Maintained separation between development and production (`/var/www/html`)
 
 ---
 
 ### 6. Git & GitHub Setup
 
 * Initialized Git repository
-* Configured global username and email
-* Changed default branch to `main`
+* Configured user identity
+* Set default branch to `main`
 * Created GitHub repository
-* Pushed code using Personal Access Token (PAT)
+* Pushed code using Personal Access Token
 
 ---
 
 ### 7. Deployment Script (Manual CI/CD)
 
-Created a deployment script:
-
-deploy.sh:
+Created `deploy.sh` script to:
 
 * Pull latest code from GitHub
 * Copy files to `/var/www/html`
@@ -82,39 +97,41 @@ deploy.sh:
 
 ---
 
-## 🔁 Deployment Workflow
+## ⚙️ Deployment Workflow
 
-1. Edit code
-2. `git add .`
-3. `git commit -m "message"`
-4. `git push`
-5. Run `deploy.sh` on EC2
+1. Update code locally
+2. Push to GitHub
+3. SSH into EC2
+4. Run:
+
+   ```
+   ./deploy.sh
+   ```
 
 ---
 
 ## 🧪 Key Learnings
 
-* SSH and remote server access
-* Linux file system and permissions
-* Web server setup (Nginx)
-* Git workflow (add, commit, push, pull)
-* Debugging real issues (SSH keys, paths, permissions)
-* Basic deployment automation
+* AWS EC2 provisioning and management
+* Nginx web server configuration
+* Git-based deployment workflow
+* Shell scripting for automation
+* Real-world debugging and troubleshooting
 
 ---
 
 ## 🚧 Next Steps
 
 * Automate deployment using GitHub Actions
-* Learn Docker and containerization
-* Set up domain + HTTPS (SSL)
-* Implement monitoring/logging
+* Add custom domain using Route 53
+* Enable HTTPS with SSL
+* Containerize using Docker
 
 ---
 
 ## 📌 Notes
 
-This project focuses on understanding fundamentals rather than using pre-built tools or copying commands.
+This project focuses on building foundational DevOps skills by manually configuring infrastructure and deployment processes.
 
 ---
 
