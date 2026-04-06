@@ -1,141 +1,93 @@
-# 🚀 DevOps Project 1: EC2 + Nginx Deployment
-
-## 🌍 Live Demo
-
-Application is accessible at:
-http://52.6.51.124
-
----
+# 🚀 DevOps Project: EC2 + Nginx + Domain + SSL
 
 ## 📌 Overview
 
-This project demonstrates provisioning a cloud-based Linux server on AWS, configuring a web server (Nginx), and implementing a deployment workflow using Git and shell scripting.
+This project demonstrates a complete deployment of a web application using AWS EC2, Nginx, a custom domain, and SSL (HTTPS).
 
-It simulates a real-world scenario of hosting and updating a web application on a remote server.
-
----
-
-## 🧠 What I Did
-
-### 1. AWS EC2 Setup
-
-* Launched an Ubuntu EC2 instance (t3.micro)
-* Configured security groups:
-
-  * SSH (Port 22)
-  * HTTP (Port 80)
-* Connected via SSH using PowerShell and WSL
+The goal was to simulate a real-world production setup instead of just running a project locally.
 
 ---
 
-### 🌐 Elastic IP Configuration
+## 🧠 What This Project Covers
 
-* Allocated and attached an Elastic IP
-* Ensures a **static public IP address** even after instance restart
-* Used for consistent browser access and SSH connectivity
-
-**Elastic IP:** 52.6.51.124
-
----
-
-### 2. Linux Exploration
-
-* Navigated filesystem (`pwd`, `ls`, `cd`)
-* Checked system resources (`top`, `df -h`, `free -h`)
-* Understood Linux directory structure
+* Cloud deployment using AWS EC2
+* Web server setup using Nginx
+* Domain configuration using DNS
+* Secure communication using SSL (HTTPS)
+* Basic infrastructure understanding
 
 ---
 
-### 3. Nginx Setup
+## ⚙️ Tech Stack
 
-* Installed and configured Nginx as a web server
-* Started and enabled the service
-* Verified using:
-
-  * `systemctl`
-  * `ss -tulnp`
-* Accessed application via browser
+* **Cloud Provider:** AWS EC2 (t3.micro)
+* **Web Server:** Nginx
+* **Domain:** opsforge.top
+* **SSL:** Let's Encrypt (Certbot)
+* **OS:** Ubuntu
 
 ---
 
-### 4. Custom Web Page Deployment
+## 🌐 Live URL
 
-* Created and modified HTML content
-* Replaced default Nginx page
-* Reloaded Nginx to apply changes
-* Verified updates live
+👉 https://opsforge.top
 
 ---
 
-### 5. Project Structure
+## 🏗️ Architecture
 
-/home/ubuntu/Devops-projects/
-└── Project1-EC2-Nginx/
-  └── index.html
-
-* Maintained separation between development and production (`/var/www/html`)
+User → Domain (DNS) → EC2 Instance → Nginx → Application
 
 ---
 
-### 6. Git & GitHub Setup
+## 🔧 Setup Steps (High-Level)
 
-* Initialized Git repository
-* Configured user identity
-* Set default branch to `main`
-* Created GitHub repository
-* Pushed code using Personal Access Token
+### 1. EC2 Setup
 
----
+* Launched Ubuntu EC2 instance
+* Configured security groups (HTTP & HTTPS allowed)
 
-### 7. Deployment Script (Manual CI/CD)
+### 2. Nginx Setup
 
-Created `deploy.sh` script to:
+* Installed Nginx
+* Configured server block to serve the application
 
-* Pull latest code from GitHub
-* Copy files to `/var/www/html`
-* Reload Nginx
+### 3. Domain Configuration
 
----
+* Purchased domain (opsforge.top)
+* Configured DNS (A records) to point to EC2 public IP
 
-## ⚙️ Deployment Workflow
+### 4. SSL Setup
 
-1. Update code locally
-2. Push to GitHub
-3. SSH into EC2
-4. Run:
-
-   ```
-   ./deploy.sh
-   ```
+* Installed Certbot
+* Generated SSL certificate using Let's Encrypt
+* Enabled HTTPS with auto redirect
 
 ---
 
-## 🧪 Key Learnings
+## 🔐 Security
 
-* AWS EC2 provisioning and management
-* Nginx web server configuration
-* Git-based deployment workflow
-* Shell scripting for automation
-* Real-world debugging and troubleshooting
+* HTTPS enabled using SSL certificate
+* Secure communication between client and server
 
 ---
 
-## 🚧 Next Steps
+## 📦 Deployment
 
-* Automate deployment using GitHub Actions
-* Add custom domain using Route 53
-* Enable HTTPS with SSL
-* Containerize using Docker
+* Application deployed manually on EC2
+* Nginx used as reverse proxy / web server
 
 ---
 
-## 📌 Notes
+## 🚀 Future Improvements
 
-This project focuses on building foundational DevOps skills by manually configuring infrastructure and deployment processes.
+* CI/CD pipeline (GitHub → EC2 auto deploy)
+* Monitoring & uptime tracking
+* Docker containerization
+* Load balancing
 
 ---
 
 ## 👨‍💻 Author
 
-Yoseph Shekatkar
-
+Yoseph (OpsForge)
