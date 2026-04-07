@@ -74,8 +74,15 @@ User → Domain (DNS) → EC2 Instance → Nginx → Application
 
 ## 📦 Deployment
 
-* Application deployed manually on EC2
-* Nginx used as reverse proxy / web server
+- Initial deployment done manually on EC2  
+- Created a custom shell script (`deploy.sh`) to automate deployment  
+- Script performs:
+  - Pull latest code from GitHub
+  - Copy files to production directory (`/var/www/html`)
+  - Set proper permissions
+  - Reload Nginx  
+
+- This setup simulates a basic CI/CD workflow (manual trigger)
 
 ---
 
