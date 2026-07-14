@@ -1,65 +1,418 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevOps Project - Yoseph</title>
-    <style>
-        body {
-            background-color: #0d1117;
-            color: #e6edf3;
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-        }
-        h1 {
-            color: #58a6ff;
-        }
-        .box {
-            border: 1px solid #30363d;
-            padding: 20px;
-            margin: 20px auto;
-            width: 60%;
-            border-radius: 10px;
-            background-color: #161b22;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yoseph Shekatkar — DevOps Engineer in Training</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0F1417;
+    --ink-raised: #161C20;
+    --paper: #E8E4DA;
+    --paper-dim: #A8A79E;
+    --signal: #FF6B35;
+    --ok: #4FD1A5;
+    --wire: #2A3138;
+    --wire-light: #3A4048;
+    --text-dim: #8B9199;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+  a { color: inherit; }
+  ::selection { background: var(--signal); color: var(--ink); }
+
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── TOPBAR ─────────────────────────────────────── */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(15,20,23,0.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--wire);
+  }
+  .topbar .wrap { display: flex; justify-content: space-between; align-items: center; height: 56px; }
+  .topbar .brand { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 14px; letter-spacing: 0.5px; }
+  .topbar .brand span { color: var(--signal); }
+  .topbar nav { display: flex; gap: 24px; font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+  .topbar nav a { color: var(--text-dim); text-decoration: none; transition: color 0.2s; }
+  .topbar nav a:hover, .topbar nav a:focus-visible { color: var(--paper); }
+
+  /* ── HERO: boot sequence ────────────────────────── */
+  .hero { padding: 72px 0 56px; border-bottom: 1px solid var(--wire); }
+  .boot { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--text-dim); margin-bottom: 28px; }
+  .boot .line { opacity: 0; animation: typeIn 0.4s ease forwards; }
+  .boot .line:nth-child(1) { animation-delay: 0.1s; }
+  .boot .line:nth-child(2) { animation-delay: 0.4s; }
+  .boot .line:nth-child(3) { animation-delay: 0.7s; }
+  .boot .line:nth-child(4) { animation-delay: 1.0s; }
+  @keyframes typeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .boot .key { color: var(--wire-light); }
+  .boot .val { color: var(--paper); }
+  .boot .ok-dot { color: var(--ok); }
+
+  .hero h1 {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 800;
+    font-size: clamp(32px, 5.5vw, 52px);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    max-width: 720px;
+  }
+  .hero h1 .accent { color: var(--signal); }
+  .hero .sub { margin-top: 20px; font-size: 17px; color: var(--text-dim); max-width: 560px; }
+  .hero .sub strong { color: var(--paper); font-weight: 600; }
+
+  .hero-actions { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+    padding: 11px 20px; border-radius: 6px; text-decoration: none;
+    display: inline-flex; align-items: center; gap: 8px;
+    transition: transform 0.15s, border-color 0.15s;
+    border: 1px solid var(--wire-light);
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  .topbar nav a:focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 2px; }
+  .incident-links a:focus-visible { outline: 2px solid var(--signal); outline-offset: 2px; }
+  .btn-primary { background: var(--signal); color: var(--ink); border-color: var(--signal); }
+  .btn-ghost { color: var(--paper); }
+  .btn-ghost:hover { border-color: var(--paper-dim); }
+
+  /* ── UPTIME STRIP (timeline) ────────────────────── */
+  .timeline-section { padding: 48px 0; border-bottom: 1px solid var(--wire); }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 600;
+    color: var(--text-dim); text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--wire); }
+
+  .uptime-bar { display: flex; gap: 3px; height: 32px; margin-bottom: 14px; }
+  .uptime-bar .seg { flex: 1; border-radius: 3px; background: var(--wire-light); position: relative; }
+  .uptime-bar .seg.active { background: var(--ok); }
+  .uptime-bar .seg.incident { background: var(--signal); }
+  .uptime-bar .seg:hover .tip { opacity: 1; }
+  .tip {
+    opacity: 0; pointer-events: none; transition: opacity 0.15s;
+    position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+    background: var(--ink-raised); border: 1px solid var(--wire-light);
+    padding: 8px 12px; border-radius: 6px; font-size: 12px; white-space: nowrap; z-index: 5;
+  }
+  .tip .t-date { font-family: 'JetBrains Mono', monospace; color: var(--text-dim); font-size: 11px; }
+
+  .month-labels { display: flex; gap: 3px; font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); }
+  .month-labels span { flex: 1; text-align: center; }
+
+  /* Mobile timeline — a vertical list, not a shrunk version of the hover bar.
+     Hover tooltips don't work on touch, so this needs to be a real, different
+     layout, not just smaller. Hidden by default; shown only under 640px. */
+  .timeline-list { display: none; list-style: none; }
+  .timeline-list li {
+    display: flex; align-items: baseline; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid var(--wire);
+  }
+  .timeline-list li:last-child { border-bottom: none; }
+  .tl-date { font-size: 11px; color: var(--text-dim); flex-shrink: 0; width: 92px; }
+  .tl-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .tl-dot.ok { background: var(--ok); }
+  .tl-dot.signal { background: var(--signal); }
+  .tl-text { font-size: 13.5px; color: var(--paper-dim); line-height: 1.5; }
+
+  .timeline-legend { display: flex; gap: 20px; margin-top: 18px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); flex-wrap: wrap; }
+  .timeline-legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+
+  /* ── PROJECTS: incident cards ───────────────────── */
+  .projects-section { padding: 48px 0; border-bottom: 1px solid var(--wire); }
+  .incident-card {
+    background: var(--ink-raised); border: 1px solid var(--wire);
+    border-radius: 10px; padding: 28px; margin-bottom: 20px;
+  }
+  .incident-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+  .incident-title { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: 700; }
+  .badge {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 4px; letter-spacing: 0.5px; white-space: nowrap;
+  }
+  .badge-live { background: rgba(255,107,53,0.15); color: var(--signal); border: 1px solid rgba(255,107,53,0.35); }
+  .badge-resolved { background: rgba(79,209,165,0.15); color: var(--ok); border: 1px solid rgba(79,209,165,0.35); }
+  .incident-meta { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); margin-bottom: 16px; }
+  .incident-body p { color: var(--paper-dim); margin-bottom: 12px; font-size: 15px; }
+  .incident-body strong { color: var(--paper); font-weight: 600; }
+
+  .stat-row { display: flex; gap: 24px; margin: 18px 0; flex-wrap: wrap; }
+  .stat { font-family: 'JetBrains Mono', monospace; }
+  .stat .n { font-size: 22px; font-weight: 700; color: var(--paper); }
+  .stat .l { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* signature: cost chart */
+  .cost-chart { background: var(--ink); border: 1px solid var(--wire); border-radius: 8px; padding: 20px; margin: 18px 0; }
+  .cost-chart .cc-label { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  .cc-bars { display: flex; align-items: flex-end; gap: 16px; height: 100px; padding: 0 8px; }
+  .cc-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; height: 100%; justify-content: flex-end; }
+  .cc-bar { width: 100%; max-width: 56px; border-radius: 4px 4px 0 0; position: relative; }
+  .cc-bar.normal { background: var(--ok); opacity: 0.8; }
+  .cc-bar.spike { background: var(--signal); }
+  .cc-val { font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 700; color: var(--paper); }
+  .cc-month { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-dim); }
+  .cc-annotation {
+    margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--wire-light);
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--signal);
+  }
+  .cc-annotation .aa-label { color: var(--text-dim); }
+
+  .incident-links { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+  .incident-links a {
+    font-family: 'JetBrains Mono', monospace; font-size: 12.5px; text-decoration: none;
+    color: var(--paper); border: 1px solid var(--wire-light); padding: 7px 14px; border-radius: 6px;
+    transition: border-color 0.2s;
+  }
+  .incident-links a:hover { border-color: var(--signal); color: var(--signal); }
+
+  /* ── SKILLS: status grid ────────────────────────── */
+  .skills-section { padding: 48px 0; border-bottom: 1px solid var(--wire); }
+  .status-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .status-tile {
+    background: var(--ink-raised); border: 1px solid var(--wire); border-radius: 8px;
+    padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+  }
+  .status-tile .name { font-family: 'JetBrains Mono', monospace; font-size: 13.5px; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .status-dot.solid { background: var(--ok); }
+  .status-dot.progress { background: var(--signal); animation: pulse 2s ease-in-out infinite; }
+  .status-dot.queued { background: var(--wire-light); }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+  .skills-legend { display: flex; gap: 20px; margin-top: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); flex-wrap: wrap; }
+  .skills-legend span { display: flex; align-items: center; gap: 6px; }
+
+  /* ── CONTACT ─────────────────────────────────────── */
+  .contact-section { padding: 56px 0 72px; }
+  .contact-section h2 { font-family: 'JetBrains Mono', monospace; font-size: 26px; margin-bottom: 12px; }
+  .contact-section p { color: var(--text-dim); max-width: 480px; margin-bottom: 28px; }
+  .contact-links { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  footer {
+    border-top: 1px solid var(--wire); padding: 24px 0;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .boot .line { animation: none; opacity: 1; }
+    .status-dot.progress { animation: none; }
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 40px 0 32px; }
+    .topbar nav { gap: 14px; }
+    .topbar nav a { padding: 6px 2px; } /* wider tap area without changing visual spacing much */
+    .wrap { padding: 0 18px; }
+
+    /* Boot sequence: smaller font + explicit wrapping so long lines never
+       force horizontal scroll on a narrow screen */
+    .boot { font-size: 12.5px; }
+    .boot .line { white-space: normal; word-break: break-word; line-height: 1.6; }
+
+    /* Timeline: swap the hover-bar for the tap-friendly vertical list */
+    .uptime-bar-wrap { display: none; }
+    .timeline-list { display: block; }
+
+    /* Status grid: let it collapse to a clean single column rather than an
+       awkward in-between width from the desktop auto-fill(200px) rule */
+    .status-grid { grid-template-columns: 1fr; }
+
+    .stat-row { gap: 16px; }
+    .cc-bars { gap: 8px; }
+    .incident-card { padding: 20px; }
+    .incident-title { font-size: 17px; }
+  }
+</style>
 </head>
 <body>
 
-```
-<h1>🚀 DevOps Project: EC2 + Nginx Deployment</h1>
-
-<div class="box">
-    <h2>📌 Project Info</h2>
-    <p>This application is deployed on an AWS EC2 instance using Nginx.</p>
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand">yoseph<span>@</span>devops</div>
+    <nav>
+      <a href="#projects">projects</a>
+      <a href="#skills">skills</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </div>
 </div>
 
-<div class="box">
-    <h2>🔧 Infrastructure Details</h2>
-    <p>Cloud: AWS EC2 (t3.micro)</p>
-    <p>Web Server: Nginx</p>
-    <p>Static IP: Elastic IP (52.6.51.124)</p>
+<div class="wrap">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="boot mono">
+      <div class="line">$ whoami</div>
+      <div class="line"><span class="key">role:</span> <span class="val">technical support → DevOps engineer</span></div>
+      <div class="line"><span class="key">background:</span> <span class="val">banking infra (Mphasis) · hardware diagnostics (Concentrix)</span></div>
+      <div class="line"><span class="key">status:</span> <span class="ok-dot">●</span> <span class="val">open to junior/mid DevOps &amp; cloud infra roles</span></div>
+    </div>
+    <h1>I fix what breaks, then I write down <span class="accent">why</span> it broke.</h1>
+    <p class="sub">Two years in technical support taught me to diagnose under pressure. Right now I'm rebuilding that instinct for infrastructure — <strong>real projects, real incidents, real cost anomalies</strong> — not just certificates.</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn btn-primary">View incident reports ↓</a>
+      <a href="https://github.com/BARBATDOS" class="btn btn-ghost" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </section>
+
+  <!-- TIMELINE -->
+  <section class="timeline-section">
+    <div class="section-label">// 2025–2026 uptime</div>
+
+    <!-- Desktop/tablet: hover bar -->
+    <div class="uptime-bar-wrap">
+      <div class="uptime-bar">
+        <div class="seg active"><div class="tip"><div class="t-date">JUN 2025</div>Last day in technical support</div></div>
+        <div class="seg active"><div class="tip"><div class="t-date">JUL–DEC 2025</div>Full-time DevOps roadmap begins</div></div>
+        <div class="seg active"><div class="tip"><div class="t-date">JAN–FEB 2026</div>Linux, networking, AWS fundamentals</div></div>
+        <div class="seg incident"><div class="tip"><div class="t-date">APR 2026</div>OpsForge cost anomaly — diagnosed &amp; migrated</div></div>
+        <div class="seg active"><div class="tip"><div class="t-date">MAY–JUN 2026</div>Docker, CI/CD, Classic Salon build begins</div></div>
+        <div class="seg incident"><div class="tip"><div class="t-date">JUL 2026</div>Classic Salon: Railway migration under deadline</div></div>
+        <div class="seg active"><div class="tip"><div class="t-date">NOW</div>Kubernetes, AWS SAA in progress</div></div>
+      </div>
+      <div class="month-labels">
+        <span>JUN</span><span>JUL–DEC</span><span>JAN–FEB</span><span>APR</span><span>MAY–JUN</span><span>JUL</span><span>NOW</span>
+      </div>
+    </div>
+
+    <!-- Mobile: vertical list — hover tooltips don't work on touch, so this isn't
+         just a smaller bar, it's a genuinely different (more usable) layout -->
+    <ul class="timeline-list">
+      <li><span class="tl-date mono">JUN 2025</span><span class="tl-dot ok"></span><span class="tl-text">Last day in technical support</span></li>
+      <li><span class="tl-date mono">JUL–DEC 2025</span><span class="tl-dot ok"></span><span class="tl-text">Full-time DevOps roadmap begins</span></li>
+      <li><span class="tl-date mono">JAN–FEB 2026</span><span class="tl-dot ok"></span><span class="tl-text">Linux, networking, AWS fundamentals</span></li>
+      <li><span class="tl-date mono">APR 2026</span><span class="tl-dot signal"></span><span class="tl-text">OpsForge cost anomaly — diagnosed &amp; migrated</span></li>
+      <li><span class="tl-date mono">MAY–JUN 2026</span><span class="tl-dot ok"></span><span class="tl-text">Docker, CI/CD, Classic Salon build begins</span></li>
+      <li><span class="tl-date mono">JUL 2026</span><span class="tl-dot signal"></span><span class="tl-text">Classic Salon: Railway migration under deadline</span></li>
+      <li><span class="tl-date mono">NOW</span><span class="tl-dot ok"></span><span class="tl-text">Kubernetes, AWS SAA in progress</span></li>
+    </ul>
+
+    <div class="timeline-legend">
+      <span><span class="dot" style="background:var(--ok)"></span>Building</span>
+      <span><span class="dot" style="background:var(--signal)"></span>Real incident, handled</span>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section class="projects-section" id="projects">
+    <div class="section-label">// incident reports</div>
+
+    <!-- Classic Salon -->
+    <div class="incident-card">
+      <div class="incident-head">
+        <div class="incident-title">Classic Ladies Salon</div>
+        <span class="badge badge-live">● LIVE IN PRODUCTION</span>
+      </div>
+      <div class="incident-meta">Full-stack booking system · Node/Express · PostgreSQL · classicladiessalon.com</div>
+      <div class="incident-body">
+        <p>Built and deployed a real production booking system for an actual small business — not a demo. When the original host's trial expired with <strong>about a day's notice</strong>, migrated the entire backend and database (Render + Neon) live, without downtime, while simultaneously running a full security audit.</p>
+        <p><strong>Found and fixed a stored XSS vulnerability</strong> where unescaped customer input could execute in the owner's authenticated session. <strong>Scrubbed a leaked credential from full git history</strong> with git-filter-repo. Found and fixed a double-booking bug that let "completed" appointments silently free up their own time slot.</p>
+        <p>Honest note: live and stable, but still early in real customer adoption — the engineering is production-grade even though usage is still small.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="n">23</div><div class="l">unit tests passing</div></div>
+        <div class="stat"><div class="n">0</div><div class="l">vulnerabilities</div></div>
+        <div class="stat"><div class="n">&lt;1 day</div><div class="l">migration deadline</div></div>
+      </div>
+      <div class="incident-links">
+        <a href="https://classicladiessalon.com" target="_blank" rel="noopener">Live site ↗</a>
+        <a href="https://github.com/BARBATDOS/Classic-Ladies-Salon" target="_blank" rel="noopener">Source + full changelog ↗</a>
+      </div>
+    </div>
+
+    <!-- OpsForge -->
+    <div class="incident-card">
+      <div class="incident-head">
+        <div class="incident-title">OpsForge — this domain</div>
+        <span class="badge badge-resolved">✓ RESOLVED</span>
+      </div>
+      <div class="incident-meta">AWS EC2 → S3 + CloudFront · cost incident → architecture migration</div>
+      <div class="incident-body">
+        <p>Deployed a static site on EC2 + Nginx as a deliberate learning exercise — full manual server setup, SSH, reverse proxy config. Then AWS's own Cost Anomaly Detection flagged a real problem.</p>
+      </div>
+      <div class="cost-chart">
+        <div class="cc-label mono">Monthly AWS spend — root cause: detached Elastic IP</div>
+        <div class="cc-bars">
+          <div class="cc-bar-wrap">
+            <div class="cc-val">$2.06</div>
+            <div class="cc-bar normal" style="height:22%"></div>
+            <div class="cc-month">MAR</div>
+          </div>
+          <div class="cc-bar-wrap">
+            <div class="cc-val">$7.22</div>
+            <div class="cc-bar spike" style="height:100%"></div>
+            <div class="cc-month">APR</div>
+          </div>
+          <div class="cc-bar-wrap">
+            <div class="cc-val">$0.00</div>
+            <div class="cc-bar normal" style="height:2%"></div>
+            <div class="cc-month">MAY+</div>
+          </div>
+        </div>
+        <div class="cc-annotation"><span class="aa-label">Apr 5–7:</span> 1066% spend spike vs. expected — Elastic IP detached from the running instance, billing idle. Migrated to S3 + CloudFront: $0/month, permanently.</div>
+      </div>
+      <div class="incident-body">
+        <p>The lesson that stuck: know which AWS free-tier benefits are <strong>time-limited</strong> (EC2, RDS) versus <strong>permanently free</strong> (Lambda, CloudFront, ACM). Built the replacement on the permanent tier. Zero cost since.</p>
+      </div>
+      <div class="incident-links">
+        <a href="https://github.com/BARBATDOS/devops-projects" target="_blank" rel="noopener">Full incident writeup ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="skills-section" id="skills">
+    <div class="section-label">// system status</div>
+    <div class="status-grid">
+      <div class="status-tile"><span class="name">Linux / Bash</span><span class="status-dot solid"></span></div>
+      <div class="status-tile"><span class="name">AWS (S3, CloudFront, ACM, EC2)</span><span class="status-dot solid"></span></div>
+      <div class="status-tile"><span class="name">Git / GitHub</span><span class="status-dot solid"></span></div>
+      <div class="status-tile"><span class="name">Node.js / Express</span><span class="status-dot solid"></span></div>
+      <div class="status-tile"><span class="name">PostgreSQL</span><span class="status-dot solid"></span></div>
+      <div class="status-tile"><span class="name">Docker</span><span class="status-dot progress"></span></div>
+      <div class="status-tile"><span class="name">CI/CD (Actions, Jenkins)</span><span class="status-dot progress"></span></div>
+      <div class="status-tile"><span class="name">AWS SAA Certification</span><span class="status-dot progress"></span></div>
+      <div class="status-tile"><span class="name">Kubernetes</span><span class="status-dot queued"></span></div>
+      <div class="status-tile"><span class="name">Prometheus / Grafana</span><span class="status-dot queued"></span></div>
+    </div>
+    <div class="skills-legend">
+      <span><span class="status-dot solid"></span>Solid</span>
+      <span><span class="status-dot progress"></span>In progress</span>
+      <span><span class="status-dot queued"></span>Queued</span>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact-section" id="contact">
+    <h2 class="mono">$ contact --reach-out</h2>
+    <p>Open to junior-to-mid DevOps, cloud infrastructure, and SecDevOps roles. Not looking for on-call-heavy SRE or customer-facing calling positions.</p>
+    <div class="contact-links">
+      <a href="https://github.com/BARBATDOS" class="btn btn-primary" target="_blank" rel="noopener">GitHub ↗</a>
+    </div>
+  </section>
+
 </div>
 
-<div class="box">
-    <h2>⚙️ Deployment</h2>
-    <p>Deployed using a custom shell script that pulls latest code from GitHub and reloads Nginx.</p>
-</div>
-
-<div class="box">
-    <h2>📦 Version</h2>
-    <p>Version 2 — Updated via deployment script</p>
-    <p><strong>Status:</strong> Live and Running ✅</p>
-</div>
-
-<hr>
-<footer style="text-align:center; margin-top:40px; color:#aaa;">
-  © 2026 OpsForge
+<footer>
+  <div class="wrap" style="display:flex;justify-content:space-between;width:100%;flex-wrap:wrap;gap:10px;">
+    <span>© 2026 Yoseph Shekatkar</span>
+    <span>opsforge.top · v4.0</span>
+    <span>Built on S3 + CloudFront · $0/month</span>
+  </div>
 </footer>
-```
 
 </body>
 </html>
-

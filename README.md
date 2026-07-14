@@ -6,31 +6,29 @@ A personal DevOps portfolio site documenting my transition from technical suppor
 
 ## 📌 Overview
 
-This project started as a simple static site deployed on AWS EC2 with Nginx. It evolved into a fully serverless architecture on S3 + CloudFront after a real-world cost problem forced a better infrastructure decision.
+This project started as a simple static site deployed on AWS EC2 with Nginx. It evolved into a fully serverless architecture on S3 + CloudFront after a real-world cost problem forced a better infrastructure decision. In July 2026, it moved again — off AWS entirely, onto Cloudflare Pages — this time not because of a cost problem, but because of a real, time-boxed deadline on the AWS account itself.
 
-That's not a failure story. That's how DevOps engineers actually learn.
+None of these are failure stories. That's how DevOps engineers actually learn: something forces a decision, you diagnose it properly, and you document why.
 
 ---
 
-## 🏗️ Architecture — Current (v3.0)
+## 🏗️ Architecture — Current (v4.0)
 
 ```
 User
- └── opsforge.top (Porkbun ALIAS record)
-      └── CloudFront CDN (HTTPS, HTTP/2, global edge)
-           └── ACM Certificate (auto-renewing SSL, free forever)
-                └── S3 Bucket (static files)
+ └── opsforge.top (Cloudflare nameservers)
+      └── Cloudflare edge network (HTTPS, global, proxied)
+           └── Cloudflare Pages (static hosting)
 ```
 
-**Monthly cost: $0**
+**Monthly cost: $0 — and no time-boxed credits, no card on file, no dependency on a promotional trial.**
 
-| Service | Provider | Cost |
-|---|---|---|
-| Domain | Porkbun | ~$4/year (already owned) |
-| DNS | Porkbun | Free |
-| SSL Certificate | AWS ACM | Free forever |
-| CDN | AWS CloudFront | Free tier (1TB/month) |
-| Storage | AWS S3 | Free tier (5GB) |
+| Service         | Provider          | Cost                     |
+| ---------------- | ------------------ | ------------------------- |
+| Domain           | Porkbun            | ~$4/year (already owned) |
+| DNS              | Cloudflare         | Free                     |
+| SSL Certificate  | Cloudflare (Google Trust Services) | Free forever |
+| CDN + Hosting    | Cloudflare Pages   | Free (100k req/day)      |
 
 ---
 
@@ -50,12 +48,13 @@ User
 ```
 
 **What it cost:**
-| Month | Cost |
-|---|---|
-| March 2026 | $2.06 |
-| April 2026 | $7.22 |
-| May 2026 (partial) | ~$1.00 |
-| **Total** | **~$10.28** |
+
+| Month              | Cost        |
+| ------------------ | ----------- |
+| March 2026         | $2.06       |
+| April 2026         | $7.22       |
+| May 2026 (partial) | ~$1.00      |
+| **Total**          | **~$10.28** |
 
 **What went wrong:**
 
@@ -64,125 +63,132 @@ In April, AWS Cost Anomaly Detection flagged a spike between April 5–7 — act
 **The decision:**
 
 Terminate everything. Rebuild on infrastructure that is free permanently — not just during the AWS 12-month free tier window.
-
 > This is a real lesson in cloud cost management: always understand which AWS free tier benefits are time-limited (EC2, RDS) versus permanently free (Lambda, CloudFront, ACM, DynamoDB). Build portfolios and personal projects on the permanently free tier wherever possible.
 
 ---
 
-### v3.0: S3 + CloudFront (May 2026 — present)
+### v3.0: S3 + CloudFront (May–July 2026)
 
-The site is purely static — HTML, CSS, no backend. EC2 was never the right tool for this. S3 + CloudFront is the industry-standard architecture for static sites and has several advantages over the old setup:
+The site was purely static — HTML, CSS, no backend. EC2 was never the right tool for this. S3 + CloudFront was the industry-standard architecture for static sites, and a real upgrade over the old setup:
 
-| | EC2 + Nginx | S3 + CloudFront |
-|---|---|---|
-| Cost | ~$7-8/month | $0 permanently |
-| SSL | Let's Encrypt (manual renewal) | ACM (auto-renewing, forever free) |
-| Performance | Single region | Global CDN edge nodes |
-| Maintenance | OS updates, Nginx config, security patches | Zero maintenance |
-| Availability | Single instance, single AZ | Globally distributed |
-| Scalability | Manual | Automatic |
+|              | EC2 + Nginx                                | S3 + CloudFront                   |
+| ------------ | ------------------------------------------ | --------------------------------- |
+| Cost         | ~$7-8/month                                | $0 permanently\*                  |
+| SSL          | Let's Encrypt (manual renewal)             | ACM (auto-renewing, forever free) |
+| Performance  | Single region                              | Global CDN edge nodes             |
+| Maintenance  | OS updates, Nginx config, security patches | Zero maintenance                  |
+| Availability | Single instance, single AZ                 | Globally distributed              |
+| Scalability  | Manual                                     | Automatic                         |
 
-The only trade-off: no server-side logic. For a static portfolio, that's not a trade-off at all.
+\*This assumption turned out to be incomplete — see below.
+
+**What forced the next move:**
+
+This time it wasn't a cost anomaly — S3 and CloudFront usage stayed genuinely near $0. The problem was one level up: the **AWS account itself** was running on a time-boxed free-credit program (~$128 in credits, a hard ~22-day countdown), not a permanent arrangement. The account's own dashboard was explicit: *"Your access to AWS services will end when credits are depleted."* Every service built on top of that account — regardless of how cheap it individually was — was exposed to that same deadline.
+
+There was also a smaller, unrelated loose end never fully closed out: a recurring `EC2 - Other` charge (~$0.28/month) that had been showing up since March, most likely an orphaned Elastic IP or EBS volume left over from the original v1.0 instance. Small, but a good reminder that "terminate the instance" and "fully clean up every resource it created" aren't automatically the same thing.
+
+**The decision:**
+
+Migrate off AWS entirely — including the parts that had genuinely been free — rather than wait for a countdown to force it under pressure later. Cloudflare Pages was the replacement: genuinely free tier, no card required, no time-boxed credit program, no billing account dependency at all.
+
+---
+
+### v4.0: Cloudflare Pages (July 2026 — present)
+
+**Real migration notes, not a clean tutorial writeup** — this one had a couple of genuine diagnostic detours worth documenting, not skipping over:
+
+**1. Nameserver rejection, misdiagnosed at first.** Manually pointing Porkbun's nameservers at Cloudflare's failed with a generic "invalid nameservers" error, no further detail. The actual cause turned out to be **Domain Lock** — a security feature on the Porkbun account (correctly) blocking exactly this kind of change to prevent unauthorized hijacking. Disabling it first, then retrying with the same nameservers, worked immediately.
+
+**2. Stale DNS records blocking domain attachment — twice.** After the nameserver handoff succeeded, connecting the domain to the new Cloudflare Pages project failed with `Hostname already has externally managed DNS records`. Cloudflare's own "automatic import" (a safety-net snapshot of the old CloudFront-pointing A/AAAA/CNAME records, done during onboarding) was still sitting there, conflicting with the new connection. Solved by deleting those imported records — the root domain's 24 old CloudFront IP records first, then a lingering `www` CNAME the same way, since it was a separate hostname that hit the identical error independently.
+
+**3. A near-miss with Porkbun's own DNS panel.** Porkbun has a separate, built-in "DNS Powered by Cloudflare" feature — cosmetically similar to a real account-level Cloudflare connection, but not the same thing. After the migration succeeded, that panel (now orphaned, since real DNS control had already moved to Cloudflare) prompted *"Would you like us to update your domain to use our nameservers?"* — clicking yes would have silently reverted the entire migration back to Porkbun's own DNS. Caught before clicking, but a good example of a UI that looks helpful while pointing in exactly the wrong direction.
+
+**Result:** zero downtime throughout — the old nameservers kept serving traffic correctly the entire time the new ones were propagating, so the live site was never actually down during any of this.
+
+```
+User
+ └── opsforge.top (Cloudflare nameservers: ullis.ns.cloudflare.com, yisroel.ns.cloudflare.com)
+      └── Cloudflare edge network
+           └── Cloudflare Pages (direct file upload, no build step)
+```
 
 ---
 
 ## ⚙️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Hosting | AWS S3 (static website hosting) |
-| CDN | AWS CloudFront |
-| SSL | AWS ACM (Certificate Manager) |
-| DNS | Porkbun (ALIAS + CNAME records) |
-| Domain | opsforge.top |
-| Deployment | AWS CLI from WSL (Ubuntu 24.04) |
+| Layer      | Technology                      |
+| ---------- | -------------------------------- |
+| Hosting    | Cloudflare Pages                 |
+| CDN + DNS  | Cloudflare (proxied)             |
+| SSL        | Cloudflare, via Google Trust Services |
+| Domain     | opsforge.top (registrar: Porkbun) |
+| Deployment | Direct file upload via Cloudflare dashboard |
 
 ---
 
-## 🔧 Setup — How It Was Built
+## 🔧 Setup — How It Was Built (v4.0)
 
-### 1. S3 Bucket
-```bash
-# Create bucket
-aws s3 mb s3://opsforge.top --region us-east-1
+### 1. Cloudflare Pages project
 
-# Upload site files
-aws s3 cp index.html s3://opsforge.top/
+Created via **Workers & Pages → Create → Pages → Upload assets** — direct file upload, no Git connection needed for a single static file with no build step. Deployed first to a temporary `*.pages.dev` URL and verified working before touching any DNS, to keep the live site's risk at zero during testing.
 
-# Enable static website hosting
-aws s3 website s3://opsforge.top/ \
-  --index-document index.html \
-  --error-document index.html
+### 2. Connect the domain
 
-# Remove public access block (intentional — public website)
-aws s3api delete-public-access-block --bucket opsforge.top
+**Workers & Pages → Domains → Add domain** and select the zone. Cloudflare requires the domain to already be an active zone in the account (see step 3) before this will succeed.
 
-# Apply public read policy
-aws s3api put-bucket-policy --bucket opsforge.top --policy '{
-  "Version": "2012-10-17",
-  "Statement": [{
-    "Effect": "Allow",
-    "Principal": "*",
-    "Action": "s3:GetObject",
-    "Resource": "arn:aws:s3:::opsforge.top/*"
-  }]
-}'
+### 3. Add the domain as a Cloudflare zone
+
+**Domains → Add domain** → `opsforge.top` → Free plan → accept the automatic DNS import (a safety snapshot, not a live connection) → Cloudflare provides two nameservers.
+
+### 4. Update nameservers at the registrar (Porkbun)
+
+**Before this step:** check **Domain Lock** is switched off — otherwise the change is silently rejected.
+
+Then, in the domain's **Nameservers** section (not the DNS records page — a separate section), replace the four existing `*.porkbun.com` nameservers with the two Cloudflare ones:
+
+```
+ullis.ns.cloudflare.com
+yisroel.ns.cloudflare.com
 ```
 
-### 2. SSL Certificate via ACM
-```bash
-# Request certificate — must be us-east-1 for CloudFront
-aws acm request-certificate \
-  --domain-name opsforge.top \
-  --subject-alternative-names www.opsforge.top \
-  --validation-method DNS \
-  --region us-east-1
-```
-DNS validation records added to Porkbun. Certificate issued automatically within 15 minutes.
+Propagation is typically much faster than the worst-case "up to 48 hours" warning — this one completed in under an hour.
 
-### 3. CloudFront Distribution
-```bash
-aws cloudfront create-distribution \
-  --distribution-config '{
-    "Origins": { ... "DomainName": "opsforge.top.s3-website-us-east-1.amazonaws.com" },
-    "DefaultCacheBehavior": { "ViewerProtocolPolicy": "redirect-to-https" },
-    "Aliases": { "Items": ["opsforge.top", "www.opsforge.top"] },
-    "ViewerCertificate": { "ACMCertificateArn": "...", "SSLSupportMethod": "sni-only" }
-  }'
-```
+### 5. Clean up the imported DNS snapshot
 
-### 4. DNS Configuration (Porkbun)
-| Type | Host | Value |
-|---|---|---|
-| ALIAS | @ | dgma4hvuf08ee.cloudfront.net |
-| CNAME | www | dgma4hvuf08ee.cloudfront.net |
+Once the zone is confirmed active in Cloudflare, delete the old CloudFront-pointing A/AAAA/CNAME records that were imported as a safety net in step 3 — they're not needed once Cloudflare Pages is serving the domain directly, and Cloudflare won't finish attaching the domain to the Pages project while they're still present.
 
-> Note: CNAME on root domain violates RFC standards. Porkbun automatically suggested ALIAS record type instead — functionally identical to CNAME but compliant on root domains.
+### 6. Decommission the old AWS resources
+
+Once the new domain is confirmed working end-to-end (checked via the SSL certificate issuer — Cloudflare's shows "Google Trust Services," AWS's showed "Amazon"):
+
+- Empty and delete the S3 bucket
+- Disable, then delete, the CloudFront distribution (must be disabled first — CloudFront won't allow deleting an active distribution directly)
+- Delete the ACM certificate (may need a short wait after the CloudFront deletion finishes propagating before AWS releases the "in use" lock on it)
 
 ---
 
 ## 🗺️ Roadmap — What's Being Built Next
 
-| # | Phase | Status |
-|---|---|---|
-| 01 | Linux + Bash Scripting | 🔄 In Progress |
-| 02 | Networking Fundamentals | ⏳ Up Next |
-| 03 | AWS — CCP + SAA Certifications | 📖 Studying |
-| 04 | Git + GitHub | ⏳ Week 2 |
-| 05 | Docker + CI/CD | ⏳ Coming Soon |
-| 06 | Jenkins + GitHub Actions | ⏳ Coming Soon |
-| 07 | Kubernetes | ⏳ Coming Soon |
+| #  | Phase                          | Status        |
+| --- | ------------------------------ | -------------- |
+| 01 | Linux + Bash Scripting         | ✅ Solid       |
+| 02 | Networking Fundamentals        | ✅ Solid       |
+| 03 | AWS — CCP + SAA Certifications | 🔄 In Progress |
+| 04 | Git + GitHub                   | ✅ Solid       |
+| 05 | Docker + CI/CD                 | 🔄 In Progress |
+| 06 | Jenkins + GitHub Actions       | 🔄 In Progress |
+| 07 | Kubernetes                     | ⏳ Queued      |
+| 08 | Prometheus + Grafana           | ⏳ Queued      |
 
 ---
 
 ## 🔐 Security Notes
 
-- AWS root account MFA enabled
-- IAM user with scoped permissions used for CLI access (not root)
-- S3 Block Public Access disabled intentionally for this bucket only
-- CloudFront enforces HTTPS — all HTTP redirected to HTTPS
-- TLS 1.2 minimum enforced on CloudFront
-- ACM certificate covers both apex and www subdomains
+- Cloudflare proxying enabled — origin (Pages) is not directly exposed, all traffic passes through Cloudflare's network
+- HTTPS enforced automatically, TLS certificate auto-provisioned and auto-renewed, no manual certificate management
+- No AWS IAM credentials, root account, or billing account required for this project anymore
+- Domain registrar (Porkbun) has Domain Lock re-enabled after the nameserver change was completed
 
 ---
 
@@ -191,3 +197,4 @@ aws cloudfront create-distribution \
 **Yoseph — OpsForge**
 Transitioning into DevOps | AWS CCP → SAA in progress
 GitHub: [BARBATDOS](https://github.com/BARBATDOS)
+Portfolio: [opsforge.top](https://opsforge.top)
