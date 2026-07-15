@@ -174,7 +174,7 @@ Once the new domain is confirmed working end-to-end (checked via the SSL certifi
 | --- | ------------------------------ | -------------- |
 | 01 | Linux + Bash Scripting         | ✅ Solid       |
 | 02 | Networking Fundamentals        | ✅ Solid       |
-| 03 | AWS — CCP + SAA Certifications | 🔄 In Progress |
+| 03 | AWS SAA Certification          | 🔄 In Progress |
 | 04 | Git + GitHub                   | ✅ Solid       |
 | 05 | Docker + CI/CD                 | 🔄 In Progress |
 | 06 | Jenkins + GitHub Actions       | 🔄 In Progress |
@@ -192,9 +192,15 @@ Once the new domain is confirmed working end-to-end (checked via the SSL certifi
 
 ---
 
+## 📊 Monitoring
+
+UptimeRobot, two monitors — `opsforge.top` and `www.opsforge.top` — checked every 5 minutes. Both free, catching either hostname failing independently rather than assuming one implies the other.
+
+---
+
 ## 👨‍💻 Author
 
 **Yoseph — OpsForge**
-Transitioning into DevOps | AWS CCP → SAA in progress
+Transitioning into DevOps | AWS SAA in progress
 GitHub: [BARBATDOS](https://github.com/BARBATDOS)
 Portfolio: [opsforge.top](https://opsforge.top)
